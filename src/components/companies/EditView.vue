@@ -2,7 +2,7 @@
   <div>
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-      <h1 class="h3 mb-0 text-gray-800">Add Company</h1>
+      <h1 class="h3 mb-0 text-gray-800">Edit Company</h1>
     </div>
     <!-- Content Row -->
     <div class="row">
@@ -51,7 +51,7 @@
                   <option value="rejected">rejected</option>
                 </select>
               </div>
-              <button type="button" @click="saveCompany()" class="btn btn-primary">Submit</button>
+              <button type="button" @click="updateCompany" class="btn btn-primary">Submit</button>
             </form>
           </div>
         </div>
@@ -63,9 +63,10 @@
 import axios from 'axios';
 
 export default {
-  name: 'CreateView',
+  name: 'EditView',
   data(){
     return {
+      companyId: '',
       errorList: '',
       model: {
         company: {
@@ -80,23 +81,37 @@ export default {
       }
     }
   },
+  mounted(){
+    this.companyId = this.$route.params.id
+    this.getCompany(this.companyId)
+  },
   methods: {
-    saveCompany(){
+    getCompany(companyId){
       var myThis = this;
-      axios.post('http://0.0.0.0:3000/api/v1/admin/companies', this.model.company).then(res => {
-        this.model.company = {
-          code: '',
-          name: '',
-          staff_size: '',
-          end_date: '',
-          start_date: '',
-          category: '',
-          status: ''
-        }
+      axios.get(`http://0.0.0.0:3000/api/v1/admin/companies/${companyId}`)
+           .then(res => {
+              this.model.company = res.data.data.company
+            })
+           .catch(function (error){
+            if (error.response) {
+              if (error.response.data.code == 404) {
+                myThis.$router.push('/admin/companies');
+                myThis.$toast.open({
+                  message: 'Not found company!',
+                  type: 'warning',
+                  position: 'top-right'
+                });
+              }
+            }
+          });
+    },
+    updateCompany(){
+      var myThis = this;
+      axios.patch(`http://0.0.0.0:3000/api/v1/admin/companies/${this.companyId}`, this.model.company).then(res => {
         if (res.data.code == 200) {
           myThis.$router.push('/admin/companies');
           myThis.$toast.open({
-            message: 'Created company!',
+            message: 'Updated company!',
             type: 'success',
             position: 'top-right'
           });

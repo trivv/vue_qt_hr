@@ -18,6 +18,7 @@
               <thead>
                 <tr>
                   <th scope="col">#</th>
+                  <th scope="col">Code</th>
                   <th scope="col">Name</th>
                   <th scope="col">StaffSize</th>
                   <th scope="col">StartDate</th>
@@ -30,6 +31,7 @@
               <tbody v-if="this.companies.length > 0">
                 <tr v-for="(company, index) in this.companies" :key="index">
                   <th scope="row">{{ company.id }}</th>
+                  <td>{{ company.code }}</td>
                   <td>{{ company.name }}</td>
                   <td>{{ company.staff_size }}</td>
                   <td>{{ company.start_date }}</td>
@@ -37,7 +39,7 @@
                   <td>{{ company.status }}</td>
                   <td>{{ company.category }}</td>
                   <td>
-                    <RouterLink to="/company/update" class="btn btn-success">Edit</RouterLink>
+                    <RouterLink :to="{ path:'/admin/companies/' + company.id + '/edit' }" class="btn btn-success">Edit</RouterLink>
                     <button to="/company/update" class="btn btn-danger">Delete</button>
                   </td>
                 </tr>
