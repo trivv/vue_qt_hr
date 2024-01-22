@@ -40,7 +40,7 @@
                   <td>{{ company.category }}</td>
                   <td>
                     <RouterLink :to="{ path:'/admin/companies/' + company.id + '/edit' }" class="btn btn-success">Edit</RouterLink>
-                    <button to="/company/update" class="btn btn-danger">Delete</button>
+                    <button @click="deleteStudent(company.id)" class="btn btn-danger">Delete</button>
                   </td>
                 </tr>
               </tbody>
@@ -72,6 +72,33 @@ export default {
       axios.get('http://0.0.0.0:3000/api/v1/admin/companies').then(res => {
         this.companies = res.data.data.companies
       })
+    },
+    deleteStudent(companyId){
+      var myThis = this;
+      if (confirm('Are you sure?')){
+        axios.delete(`http://0.0.0.0:3000/api/v1/admin/companies/${companyId}`)
+           .then(res => {
+            console.log(res);
+             this.getCompanies();
+             myThis.$toast.open({
+               message: 'Deleted company!',
+               type: 'success',
+               position: 'top-right'
+             });
+           })
+           .catch(function (error){
+            if (error.response) {
+              if (error.response.data.code == 404) {
+                myThis.$router.push('/admin/companies');
+                myThis.$toast.open({
+                  message: 'Not found company!',
+                  type: 'warning',
+                  position: 'top-right'
+                });
+              }
+            }
+          });
+      }
     }
   }
 }
