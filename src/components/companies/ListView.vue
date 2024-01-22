@@ -55,8 +55,9 @@
   </div>
 </template>
 <script>
-import axios from 'axios';
-
+import { getCompaniesQuery } from '../../services/axios/companies/query'
+import { deleteCompanyMutation } from '../../services/axios/companies/mutation'
+import { successToast, notFoundToast } from '../../services/toast'
 export default {
   name: 'ListView',
   data(){
@@ -69,32 +70,25 @@ export default {
   },
   methods: {
     getCompanies(){
-      axios.get('http://0.0.0.0:3000/api/v1/admin/companies').then(res => {
-        this.companies = res.data.data.companies
-      })
+      getCompaniesQuery().then((res) => {
+        this.companies = res.data.companies
+      });
+
     },
     deleteStudent(companyId){
       var myThis = this;
       if (confirm('Are you sure?')){
-        axios.delete(`http://0.0.0.0:3000/api/v1/admin/companies/${companyId}`)
-           .then(res => {
+        deleteCompanyMutation(companyId)
+          .then((res) => {
             console.log(res);
-             this.getCompanies();
-             myThis.$toast.open({
-               message: 'Deleted company!',
-               type: 'success',
-               position: 'top-right'
-             });
-           })
-           .catch(function (error){
+            this.getCompanies();
+            successToast(myThis, 'Deleted company!')
+          })
+          .catch(function (error){
             if (error.response) {
               if (error.response.data.code == 404) {
                 myThis.$router.push('/admin/companies');
-                myThis.$toast.open({
-                  message: 'Not found company!',
-                  type: 'warning',
-                  position: 'top-right'
-                });
+                notFoundToast(myThis)
               }
             }
           });
@@ -106,3 +100,4 @@ export default {
 
 <style scoped>
 </style>
+../../services/axios/companies/mutation

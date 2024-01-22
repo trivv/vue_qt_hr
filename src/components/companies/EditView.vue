@@ -60,7 +60,9 @@
   </div>
 </template>
 <script>
-import axios from 'axios';
+import { getCompanyQuery } from '../../services/axios/companies/query'
+import { updateCompanyMutation } from '../../services/axios/companies/mutation'
+import { successToast, notFoundToast } from '../../services/toast'
 
 export default {
   name: 'EditView',
@@ -88,33 +90,25 @@ export default {
   methods: {
     getCompany(companyId){
       var myThis = this;
-      axios.get(`http://0.0.0.0:3000/api/v1/admin/companies/${companyId}`)
-           .then(res => {
-              this.model.company = res.data.data.company
-            })
-           .catch(function (error){
-            if (error.response) {
-              if (error.response.data.code == 404) {
-                myThis.$router.push('/admin/companies');
-                myThis.$toast.open({
-                  message: 'Not found company!',
-                  type: 'warning',
-                  position: 'top-right'
-                });
-              }
+      getCompanyQuery(companyId)
+        .then(res => {
+          this.model.company = res.data.company
+        })
+        .catch(function (error){
+          if (error.response) {
+            if (error.response.data.code == 404) {
+              myThis.$router.push('/admin/companies');
+              notFoundToast(myThis)
             }
-          });
+          }
+        });
     },
     updateCompany(){
       var myThis = this;
-      axios.patch(`http://0.0.0.0:3000/api/v1/admin/companies/${this.companyId}`, this.model.company).then(res => {
-        if (res.data.code == 200) {
+      updateCompanyMutation(this.companyId, this.model.company).then(res => {
+        if (res.code == 200) {
           myThis.$router.push('/admin/companies');
-          myThis.$toast.open({
-            message: 'Updated company!',
-            type: 'success',
-            position: 'top-right'
-          });
+          successToast(myThis, 'Updated company!')
         }
       })
       .catch(function (error){
@@ -135,3 +129,4 @@ export default {
 
 <style scoped>
 </style>
+../../services/axios/companies/mutation

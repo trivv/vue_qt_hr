@@ -60,7 +60,8 @@
   </div>
 </template>
 <script>
-import axios from 'axios';
+import { createCompanyMutation } from '../../services/axios/companies/mutation'
+import { successToast } from '../../services/toast'
 
 export default {
   name: 'CreateView',
@@ -83,7 +84,7 @@ export default {
   methods: {
     saveCompany(){
       var myThis = this;
-      axios.post('http://0.0.0.0:3000/api/v1/admin/companies', this.model.company).then(res => {
+      createCompanyMutation(this.model.company).then(res => {
         this.model.company = {
           code: '',
           name: '',
@@ -93,13 +94,9 @@ export default {
           category: '',
           status: ''
         }
-        if (res.data.code == 200) {
+        if (res.code == 200) {
           myThis.$router.push('/admin/companies');
-          myThis.$toast.open({
-            message: 'Created company!',
-            type: 'success',
-            position: 'top-right'
-          });
+          successToast(myThis, 'Created company!')
         }
       })
       .catch(function (error){
@@ -112,7 +109,7 @@ export default {
         } else {
           console.log('Error', error.message);
         }
-      })
+      });
     }
   }
 }
@@ -120,3 +117,4 @@ export default {
 
 <style scoped>
 </style>
+../../services/axios/companies/mutation
