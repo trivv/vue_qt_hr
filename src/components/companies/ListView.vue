@@ -4,7 +4,7 @@
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
       <h1 class="h3 mb-0 text-gray-800">Companies</h1>
       <RouterLink to="/admin/companies/create" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
-        <i class="fas fa-download fa-sm text-white-50"></i> Add Company
+        <i class="fas fa-download fa-sm text-white-50"></i>Add Company
       </RouterLink>
     </div>
     <!-- Content Row -->
@@ -39,7 +39,7 @@
                   <td>{{ company.status }}</td>
                   <td>{{ company.category }}</td>
                   <td>
-                    <RouterLink :to="{ path:'/admin/companies/' + company.id + '/edit' }" class="btn btn-success">Edit</RouterLink>
+                    <RouterLink :to="{ path:'/admin/companies/' + company.id + '/edit' }" class="btn btn-success mr-2">Edit</RouterLink>
                     <button @click="deleteStudent(company.id)" class="btn btn-danger">Delete</button>
                   </td>
                 </tr>
@@ -48,6 +48,7 @@
                 <th colspan="10">Loading...</th>
               </tbody>
             </table>
+            <Pagination v-if="companies" :total-pages="totalPages" :per-page="perPage" :current-page="currentPage" @pagechanged="onPageChange" />
           </div>
         </div>
       </div>
@@ -58,11 +59,18 @@
 import { getCompaniesQuery } from '../../services/axios/companies/query'
 import { deleteCompanyMutation } from '../../services/axios/companies/mutation'
 import { successToast, notFoundToast } from '../../services/toast'
+import Pagination from '../Pagination'
+import DeliveryMethods from '../../delivery-methods'
+
 export default {
   name: 'ListView',
   data(){
     return {
-      companies: []
+      companies: [],
+      currentPage: 1,
+      totalPages: 0,
+      totalCount: 0,
+      perPage: DeliveryMethods.PER_PAGE
     }
   },
   mounted(){
@@ -70,8 +78,10 @@ export default {
   },
   methods: {
     getCompanies(){
-      getCompaniesQuery().then((res) => {
+      getCompaniesQuery(this.currentPage, this.perPage).then((res) => {
         this.companies = res.data.companies
+        this.totalPages = res.data.total_pages
+        this.totalCount = res.data.total_count
       });
 
     },
@@ -81,6 +91,7 @@ export default {
         deleteCompanyMutation(companyId)
           .then((res) => {
             console.log(res);
+            this.currentPage = 1;
             this.getCompanies();
             successToast(myThis, 'Deleted company!')
           })
@@ -93,11 +104,20 @@ export default {
             }
           });
       }
+    },
+    onPageChange (page) {
+      this.currentPage = page
+      this.getCompanies()
+    },
+    onChangeRecordsPerPage () {
+      this.getCompanies()
     }
+  },
+  components: {
+    Pagination
   }
 }
 </script>
 
 <style scoped>
 </style>
-../../services/axios/companies/mutation
