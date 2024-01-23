@@ -1,5 +1,7 @@
 import axios from 'axios';
 
+axios.defaults.headers.common['Authorization'] = localStorage.getItem('token');
+
 export async function getHttp(uri){
   return await axios.get(`${process.env.VUE_APP_BASE_URL}/${uri}`)
 }
