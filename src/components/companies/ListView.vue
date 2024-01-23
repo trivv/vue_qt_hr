@@ -59,7 +59,7 @@
 import { getCompaniesQuery } from '../../services/axios/companies/query'
 import { deleteCompanyMutation } from '../../services/axios/companies/mutation'
 import { successToast, notFoundToast } from '../../services/toast'
-import Pagination from '../Pagination'
+import Pagination from '../common/Pagination'
 import DeliveryMethods from '../../delivery-methods'
 
 export default {
