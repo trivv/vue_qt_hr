@@ -41,24 +41,17 @@
 <script>
 import { loginMutation } from '../services/axios/authenticate/mutation';
 import { successToast } from '../services/toast';
-import { loggedIn } from '../services/axios/authenticate/base'
 
 export default {
 
   name: 'LoginView',
   data(){
     return {
-      loggedIn: false,
       error: '',
       model: {
         email: '',
         password: '',
       }
-    }
-  },
-  mounted(){
-    if(loggedIn){
-      this.$router.push('/admin/companies');
     }
   },
   methods: {
@@ -67,6 +60,7 @@ export default {
       loginMutation(this.model).then(res => {
         if (res.data.code == 200) {
           localStorage.setItem('token', res.headers.authorization)
+          this.$store.commit('setIsAuth', true)
           successToast(myThis, 'Login Success!!!')
           myThis.$router.push('/admin/companies');
         }
