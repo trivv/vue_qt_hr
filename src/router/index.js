@@ -42,11 +42,12 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  const publicPages = ['/admin/login'];
-  const authRequired = !publicPages.includes(to.path);
-  const loggedIn = localStorage.getItem('token');
-
-  if (authRequired && !loggedIn) {
+  const publicPages = ['login'];
+  const isAuthenticated = localStorage.getItem('token');
+  if(isAuthenticated && publicPages.includes(to.name)){
+    return next('/admin/companies');
+  }
+  if (!isAuthenticated && !publicPages.includes(to.name)) {
     return next('/admin/login');
   }
   next();

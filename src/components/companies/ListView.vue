@@ -58,7 +58,7 @@
 <script>
 import { getCompaniesQuery } from '../../services/axios/companies/query'
 import { deleteCompanyMutation } from '../../services/axios/companies/mutation'
-import { successToast, notFoundToast } from '../../services/toast'
+import { successToast, notFoundToast, unAuthenticateToast } from '../../services/toast'
 import Pagination from '../common/Pagination'
 import DeliveryMethods from '../../delivery-methods'
 
@@ -78,12 +78,19 @@ export default {
   },
   methods: {
     getCompanies(){
+      var myThis = this;
       getCompaniesQuery(this.currentPage, this.perPage).then((res) => {
         this.companies = res.data.companies
         this.totalPages = res.data.total_pages
         this.totalCount = res.data.total_count
+      })
+      .catch(function(error){
+        if (error.response.data.code == 401) {
+          localStorage.removeItem('token');
+          myThis.$router.push('/admin/login');
+          unAuthenticateToast(myThis)
+        }
       });
-
     },
     deleteStudent(companyId){
       var myThis = this;
@@ -95,7 +102,7 @@ export default {
             this.getCompanies();
             successToast(myThis, 'Deleted company!')
           })
-          .catch(function (error){
+          .catch(function(error){
             if (error.response) {
               if (error.response.data.code == 404) {
                 myThis.$router.push('/admin/companies');

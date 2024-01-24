@@ -13,3 +13,12 @@ export async function notFoundToast(myThis){
     position: 'top-right'
   })
 }
+
+export async function unAuthenticateToast(myThis){
+  myThis.$store.commit('setIsAuth', false)
+  myThis.$toast.open({
+    message: 'You need login!!!',
+    type: 'warning',
+    position: 'top-right'
+  })
+}
