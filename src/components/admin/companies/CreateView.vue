@@ -83,8 +83,8 @@
   </div>
 </template>
 <script>
-import { createCompanyMutation } from '../../services/axios/companies/mutation'
-import { successToast } from '../../services/toast'
+import { createCompanyMutation } from '../../../services/axios/companies/mutation'
+import { successToast } from '../../../services/toast'
 
 export default {
   name: 'CreateView',

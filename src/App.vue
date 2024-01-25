@@ -1,10 +1,22 @@
 <template>
-  <div id="wrapper">
-    <SideBarView v-if="this.$store.state.isAuth"/>
+  <div id="wrapper" v-if="this.$store.state.role == 'admin'">
+    <AdminSideBarView v-if="this.$store.state.isAuth"/>
     <div id="content-wrapper" class="d-flex flex-column">
       <!-- Main Content -->
       <div id="content">
-        <HeaderView v-if="this.$store.state.isAuth"/>
+        <AdminHeaderView v-if="this.$store.state.isAuth"/>
+        <div class="container-fluid">
+          <RouterView />
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="wrapper" v-else>
+    <UserSideBarView v-if="this.$store.state.isAuth"/>
+    <div id="content-wrapper" class="d-flex flex-column">
+      <!-- Main Content -->
+      <div id="content">
+        <UserHeaderView v-if="this.$store.state.isAuth"/>
         <div class="container-fluid">
           <RouterView />
         </div>
@@ -14,15 +26,19 @@
 </template>
 
 <script>
-import SideBarView from './components/common/SideBarView.vue'
-import HeaderView from './components/common/HeaderView.vue'
+import AdminSideBarView from './components/admin/SideBarView.vue'
+import UserSideBarView from './components/user/SideBarView.vue'
+import AdminHeaderView from './components/admin/HeaderView.vue'
+import UserHeaderView from './components/user/HeaderView.vue'
 import { RouterView } from 'vue-router'
 
 export default {
   name: 'App',
   components: {
-    SideBarView,
-    HeaderView,
+    AdminSideBarView,
+    UserSideBarView,
+    AdminHeaderView,
+    UserHeaderView,
     RouterView
   }
 }

@@ -7,7 +7,7 @@
         <div class="sidebar-brand-icon rotate-n-15">
           <i class="fas fa-laugh-wink"></i>
         </div>
-        <div class="sidebar-brand-text mx-3">HR Admin
+        <div class="sidebar-brand-text mx-3">HR Staff
         </div>
       </RouterLink>
       <!-- Divider -->
@@ -24,27 +24,15 @@
       <!-- Heading -->
       <div class="sidebar-heading">Interface</div>
       <li class="nav-item">
-        <RouterLink class="nav-link collapsed" to="/admin/companies">
-          <i class="fas fa-fw fa-cog"></i>
-          <span>Companies</span>
-        </RouterLink>
-      </li>
-      <li class="nav-item">
         <RouterLink class="nav-link collapsed" to="#">
-          <i class="fas fa-fw fa-wrench"></i>
+          <i class="fas fa-fw fa-cog"></i>
           <span>Offices</span>
         </RouterLink>
       </li>
       <li class="nav-item">
         <RouterLink class="nav-link collapsed" to="#">
           <i class="fas fa-fw fa-wrench"></i>
-          <span>Departments</span>
-        </RouterLink>
-      </li>
-      <li class="nav-item">
-        <RouterLink class="nav-link collapsed" to="#">
-          <i class="fas fa-fw fa-wrench"></i>
-          <span>Users</span>
+          <span>TimeCards</span>
         </RouterLink>
       </li>
       <!-- Divider -->
@@ -89,7 +77,6 @@
 import { RouterLink, RouterView } from 'vue-router'
 import { successToast } from '../../services/toast';
 
-
 export default {
   name: 'SideBarView',
   component: {
@@ -100,7 +87,12 @@ export default {
     logOut(){
       localStorage.removeItem('token');
       this.$store.commit('setIsAuth', false)
-      this.$router.push('/admin/login');
+      console.log(this.$store.state.role)
+      if(this.$store.state.role == 'admin'){
+        this.$router.push('/admin/login');
+      }else {
+        this.$router.push('/login');
+      }
       successToast(this, 'Logout Success!!!')
     }
   }

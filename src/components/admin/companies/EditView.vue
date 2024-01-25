@@ -60,9 +60,9 @@
   </div>
 </template>
 <script>
-import { getCompanyQuery } from '../../services/axios/companies/query'
-import { updateCompanyMutation } from '../../services/axios/companies/mutation'
-import { successToast, notFoundToast } from '../../services/toast'
+import { getCompanyQuery } from '../../../services/axios/companies/query'
+import { updateCompanyMutation } from '../../../services/axios/companies/mutation'
+import { successToast, notFoundToast } from '../../../services/toast'
 
 export default {
   name: 'EditView',

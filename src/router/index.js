@@ -1,17 +1,23 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../components/HomeView.vue'
 import AboutView from '../components/common/AboutView.vue'
-import ListCompanyView from '../components/companies/ListView.vue'
-import CreateCompanyView from '../components/companies/CreateView.vue'
-import EditCompanyView from '../components/companies/EditView.vue'
-import LoginView from '../components/LoginView.vue'
+import ListCompanyView from '../components/admin/companies/ListView.vue'
+import CreateCompanyView from '../components/admin/companies/CreateView.vue'
+import EditCompanyView from '../components/admin/companies/EditView.vue'
+import AdminLoginView from '../components/admin/LoginView.vue'
+import UserLoginView from '../components/user/LoginView.vue'
 const router = createRouter({
   history: createWebHistory(import.meta?.env?.BASE_URL),
   routes: [
     {
       path: '/admin/login',
-      name: 'login',
-      component: LoginView
+      name: 'adminLogin',
+      component: AdminLoginView
+    },
+    {
+      path: '/login',
+      name: 'userLogin',
+      component: UserLoginView
     },
     {
       path: '/',
@@ -42,13 +48,13 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  const publicPages = ['login'];
+  const publicPages = ['adminLogin', 'userLogin'];
   const isAuthenticated = localStorage.getItem('token');
   if(isAuthenticated && publicPages.includes(to.name)){
     return next('/admin/companies');
   }
   if (!isAuthenticated && !publicPages.includes(to.name)) {
-    return next('/admin/login');
+    return next('/login');
   }
   next();
 })

@@ -56,11 +56,11 @@
   </div>
 </template>
 <script>
-import { getCompaniesQuery } from '../../services/axios/companies/query'
-import { deleteCompanyMutation } from '../../services/axios/companies/mutation'
-import { successToast, notFoundToast, unAuthenticateToast } from '../../services/toast'
-import Pagination from '../common/Pagination'
-import DeliveryMethods from '../../delivery-methods'
+import { getCompaniesQuery } from '../../../services/axios/companies/query'
+import { deleteCompanyMutation } from '../../../services/axios/companies/mutation'
+import { successToast, notFoundToast, unAuthenticateToast } from '../../../services/toast'
+import Pagination from '../../common/Pagination'
+import DeliveryMethods from '../../../delivery-methods'
 
 export default {
   name: 'ListView',
