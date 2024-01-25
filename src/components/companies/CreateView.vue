@@ -37,7 +37,7 @@
               </div>
               <div class="mb-3">
                 <label for="selectCategory" class="form-label">Category</label>
-                <select class="form-select" v-model="model.company.category" aria-label="Default select example">
+                <select class="form-select" v-model="model.company.category">
                   <option value="trail" selected>trail</option>
                   <option value="paid">paid</option>
                   <option value="free">free</option>
@@ -45,7 +45,7 @@
               </div>
               <div class="mb-3">
                 <label for="selectStatus" class="form-label">Status</label>
-                <select class="form-select" v-model="model.company.status" aria-label="Default select example">
+                <select class="form-select" v-model="model.company.status">
                   <option value="pending" selected>pending</option>
                   <option value="active">active</option>
                   <option value="rejected">rejected</option>
