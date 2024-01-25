@@ -15,41 +15,64 @@
               <li class="mb0 ms-3" v-for="(error, index) in this.errorList" :key="index"> {{ error }}</li>
             </ul>
             <form>
-              <div class="mb-3">
-                <label for="inputCode" class="form-label">Code Company</label>
-                <input type="text" class="form-control" id="inputCode" v-model="model.company.code">
-              </div>
-              <div class="mb-3">
-                <label for="inputName" class="form-label">Name</label>
-                <input type="text" class="form-control" id="inputName" v-model="model.company.name">
-              </div>
-              <div class="mb-3">
-                <label for="inputStaffSize" class="form-label">Staff Size</label>
-                <input type="number" min="1" class="form-control" id="inputStaffSize" v-model="model.company.staff_size">
-              </div>
-              <div class="mb-3">
-                <label for="inputStartDate" class="form-label">Start Date</label>
-                <input type="date" class="form-control" id="inputStartDate" v-model="model.company.start_date">
-              </div>
-              <div class="mb-3">
-                <label for="inputEndDate" class="form-label">End Date</label>
-                <input type="date" class="form-control" id="inputEndDate" v-model="model.company.end_date">
-              </div>
-              <div class="mb-3">
-                <label for="selectCategory" class="form-label">Category</label>
-                <select class="form-select" v-model="model.company.category">
-                  <option value="trail" selected>trail</option>
-                  <option value="paid">paid</option>
-                  <option value="free">free</option>
-                </select>
-              </div>
-              <div class="mb-3">
+              <h4>Company Info</h4>
+              <div class="card-body">
+                <div class="mb-3">
+                  <label for="inputCode" class="form-label">Code Company</label>
+                  <input type="text" class="form-control" id="inputCode" v-model="model.company.code">
+                </div>
+                <div class="mb-3">
+                  <label for="inputName" class="form-label">Name</label>
+                  <input type="text" class="form-control" id="inputName" v-model="model.company.name">
+                </div>
+                <div class="mb-3">
+                  <label for="inputStaffSize" class="form-label">Staff Size</label>
+                  <input type="number" min="1" class="form-control" id="inputStaffSize" v-model="model.company.staff_size">
+                </div>
+                <div class="mb-3">
+                  <label for="inputStartDate" class="form-label">Start Date</label>
+                  <input type="date" class="form-control" id="inputStartDate" v-model="model.company.start_date">
+                </div>
+                <div class="mb-3">
+                  <label for="inputEndDate" class="form-label">End Date</label>
+                  <input type="date" class="form-control" id="inputEndDate" v-model="model.company.end_date">
+                </div>
+                <div class="mb-3">
+                  <label for="selectCategory" class="form-label">Category</label>
+                  <select class="form-select" v-model="model.company.category">
+                    <option value="trail" selected>trail</option>
+                    <option value="paid">paid</option>
+                    <option value="free">free</option>
+                  </select>
+                </div>
+                <div class="mb-3">
                 <label for="selectStatus" class="form-label">Status</label>
-                <select class="form-select" v-model="model.company.status">
-                  <option value="pending" selected>pending</option>
-                  <option value="active">active</option>
-                  <option value="rejected">rejected</option>
-                </select>
+                  <select class="form-select" v-model="model.company.status">
+                    <option value="pending" selected>pending</option>
+                    <option value="active">active</option>
+                    <option value="rejected">rejected</option>
+                  </select>
+                </div>
+              </div>
+              <hr class="sidebar-divider d-none d-md-block">
+              <h4>Owner Info</h4>
+              <div class="card-body">
+                <div class="mb-3">
+                  <label for="inputCodeUser" class="form-label">Code User</label>
+                  <input type="text" class="form-control" id="inputCodeUser" v-model="model.user.code">
+                </div>
+                <div class="mb-3">
+                  <label for="inputEmail" class="form-label">Email</label>
+                  <input type="email" class="form-control" id="inputEmail" v-model="model.user.email">
+                </div>
+                <div class="mb-3">
+                  <label for="inputFirstName" class="form-label">First Name</label>
+                  <input type="text" class="form-control" id="inputFirstName" v-model="model.user.first_name">
+                </div>
+                <div class="mb-3">
+                  <label for="inputLastName" class="form-label">Last Name</label>
+                  <input type="text" class="form-control" id="inputLastName" v-model="model.user.last_name">
+                </div>
               </div>
               <button type="button" @click="saveCompany()" class="btn btn-primary">Submit</button>
             </form>
@@ -77,6 +100,12 @@ export default {
           start_date: '',
           category: '',
           status: ''
+        },
+        user: {
+          code: '',
+          email: '',
+          first_name: '',
+          last_name: ''
         }
       }
     }
@@ -84,7 +113,7 @@ export default {
   methods: {
     saveCompany(){
       var myThis = this;
-      createCompanyMutation(this.model.company).then(res => {
+      createCompanyMutation(this.model).then(res => {
         this.model.company = {
           code: '',
           name: '',
@@ -93,6 +122,12 @@ export default {
           start_date: '',
           category: '',
           status: ''
+        }
+        this.model.user = {
+          code: '',
+          email: '',
+          first_name: '',
+          last_name: ''
         }
         if (res.code == 200) {
           myThis.$router.push('/admin/companies');
