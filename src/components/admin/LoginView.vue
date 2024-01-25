@@ -39,8 +39,8 @@
 </template>
 
 <script>
-import { loginMutation } from '../services/axios/authenticate/mutation';
-import { successToast } from '../services/toast';
+import { adminLoginMutation } from '../../services/axios/authenticate/mutation';
+import { successToast } from '../../services/toast';
 
 export default {
 
@@ -57,10 +57,11 @@ export default {
   methods: {
     login(){
       var myThis = this;
-      loginMutation(this.model).then(res => {
+      adminLoginMutation(this.model).then(res => {
         if (res.data.code == 200) {
           localStorage.setItem('token', res.headers.authorization)
           this.$store.commit('setIsAuth', true)
+          this.$store.commit('setRole', 'admin')
           successToast(myThis, 'Login Success!!!')
           myThis.$router.push('/admin/companies');
         }
