@@ -68,7 +68,7 @@ export default {
       .catch(function (error){
         if (error.response) {
           if (error.response.data.code == 401) {
-            myThis.error = error.response.data.message
+            myThis.error = error.response.data.errors
           }
         } else if (error.request) {
           console.log(error.request);
@@ -82,4 +82,7 @@ export default {
 </script>
 
 <style scoped>
+li.mb0.ms-3 {
+    list-style-type: none;
+}
 </style>
