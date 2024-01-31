@@ -6,6 +6,8 @@ import Toast from 'vue-toast-notification';
 import 'vue-toast-notification/dist/theme-bootstrap.css';
 import './assets/main.css'
 import { store } from '../src/store/index';
+import 'bootstrap/dist/js/bootstrap';
+import 'bootstrap/dist/css/bootstrap.css'
 
 const app = createApp(App);
 app.use(Vuex);

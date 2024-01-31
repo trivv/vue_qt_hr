@@ -1,11 +1,11 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../components/HomeView.vue'
 import AboutView from '../components/common/AboutView.vue'
 import ListCompanyView from '../components/admin/companies/ListView.vue'
 import CreateCompanyView from '../components/admin/companies/CreateView.vue'
 import EditCompanyView from '../components/admin/companies/EditView.vue'
 import AdminLoginView from '../components/admin/LoginView.vue'
 import UserLoginView from '../components/user/LoginView.vue'
+import UserHomeView from '../components/user/HomeView.vue'
 const router = createRouter({
   history: createWebHistory(import.meta?.env?.BASE_URL),
   routes: [
@@ -22,7 +22,7 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: HomeView
+      component: UserHomeView
     },
     {
       path: '/about',

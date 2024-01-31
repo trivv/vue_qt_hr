@@ -12,11 +12,15 @@
     </div>
   </div>
   <div id="wrapper" v-else>
-    <UserSideBarView v-if="this.$store.state.isAuth"/>
     <div id="content-wrapper" class="d-flex flex-column">
       <!-- Main Content -->
-      <div id="content">
-        <UserHeaderView v-if="this.$store.state.isAuth"/>
+      <div id="content" v-if="this.$store.state.isAuth">
+        <UserHeaderView/>
+        <div class="container-fluid">
+          <RouterView />
+        </div>
+      </div>
+      <div id="content" v-else>
         <div class="container-fluid">
           <RouterView />
         </div>
@@ -27,7 +31,6 @@
 
 <script>
 import AdminSideBarView from './components/admin/SideBarView.vue'
-import UserSideBarView from './components/user/SideBarView.vue'
 import AdminHeaderView from './components/admin/HeaderView.vue'
 import UserHeaderView from './components/user/HeaderView.vue'
 import { RouterView } from 'vue-router'
@@ -36,7 +39,6 @@ export default {
   name: 'App',
   components: {
     AdminSideBarView,
-    UserSideBarView,
     AdminHeaderView,
     UserHeaderView,
     RouterView
@@ -44,6 +46,9 @@ export default {
 }
 </script>
 
-<style>
-
+<style scoped>
+.schedule, .activity {
+  height: 300px;
+  margin: auto;
+}
 </style>
