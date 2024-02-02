@@ -62,7 +62,7 @@ export default {
           localStorage.setItem('token', res.headers.authorization)
           this.$store.commit('setIsAuth', true)
           successToast(myThis, 'Login Success!!!')
-          myThis.$router.push('/');
+          window.location.href = '/';
         }
       })
       .catch(function (error){
