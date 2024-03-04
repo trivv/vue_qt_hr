@@ -68,31 +68,29 @@
               </div>
               <div class="col-md-2">
                 <div class="schedule">
-                  <select class="form-select">
-                    <option value="" disabled selected hidden>Chọn Văn Phòng</option>
+                  <select class="form-select" @change="onChange($event)">
+                    <option value="" disabled selected hidden v-if="offices == []">Chọn Văn Phòng</option>
                     <option v-for="(office, index) in offices" :value="office.id" :key="index" >{{ office.name }}</option>
                   </select>
                   <div class="schedule-item mb-4">
-                    <label>
-                      <font-awesome-icon icon="fa-regular fa-envelope"></font-awesome-icon>
-                      <span class="badge badge-primary mr-1">08:00~17:00</span>
-                    </label>
-                    <span class="badge badge-primary">19:00~21:00</span>
+                    <span class="badge badge-primary mr-1" v-for="(schedule, index) in schedules" :value="schedule.id" :key="index">
+                      {{ formatDateTime(schedule.time_in) }}-{{ formatDateTime(schedule.time_out) }}
+                    </span>
                   </div>
                   <div class="row g-2 mb-2">
                     <div class="col-6">
-                      <button class="btn btn-success w-100">Đi làm</button>
+                      <button class="btn btn-success w-100" :disabled="!this.enable_checkin">Checkin</button>
                     </div>
                     <div class="col-6">
-                      <button class="btn btn-danger w-100">Tan làm</button>
+                      <button class="btn btn-danger w-100" :disabled="!this.enable_checkout">Checkout</button>
                     </div>
                   </div>
                   <div class="row g-2">
                     <div class="col-6">
-                      <button class="btn btn-warning w-100">Ra ngoài</button>
+                      <button class="btn btn-warning w-100" :disabled="!this.enable_break">Break</button>
                     </div>
                     <div class="col-6">
-                      <button class="btn btn-info w-100">Quay lại</button>
+                      <button class="btn btn-info w-100" :disabled="!this.enable_return">Return</button>
                     </div>
                   </div>
                 </div>
@@ -135,7 +133,7 @@
 <script>
 import { RouterLink } from 'vue-router'
 import { successToast, unAuthenticateToast } from '../../services/toast';
-import { getOfficesQuery } from '../../services/axios/offices/query'
+import { getOfficesQuery, getTopInOfficesQuery } from '../../services/axios/offices/query'
 import { getTimeCardsQuery } from '../../services/axios/time_cards/query'
 
 export default {
@@ -145,8 +143,15 @@ export default {
   },
   data() {
     return {
+      office_id: '',
       offices: [],
-      time_cards: []
+      time_cards: [],
+      last_attendance_status: '',
+      schedules: [],
+      enable_checkin: false,
+      enable_break: false,
+      enable_return: false,
+      enable_checkout: false
     }
   },
   mounted(){
@@ -184,6 +189,11 @@ export default {
     this.getTimeCards();
   },
   methods: {
+    onChange(event){
+      if (event?.target?.value != null){
+        this.getTopInOffices(event.target.value)
+      }
+    },
     logOut(){
       localStorage.removeItem('token');
       this.$store.commit('setIsAuth', false)
@@ -198,6 +208,38 @@ export default {
       var myThis = this;
       getOfficesQuery().then((res) => {
         this.offices = res.data.offices
+        this.office_id = res.data.offices[0].id
+        if(this.office_id != null) {
+          this.getTopInOffices(this.office_id)
+        }
+      })
+      .catch(function(error){
+        if (error.response.data.code == 401) {
+          localStorage.removeItem('token');
+          myThis.$router.push('/login');
+          unAuthenticateToast(myThis)
+        }
+      });
+    },
+    getTopInOffices(office_id){
+      var myThis = this;
+      getTopInOfficesQuery(office_id).then((res) => {
+        this.schedules = res.data.schedules
+        this.last_attendance_status = res.data.last_attendance_status
+        if (this.last_attendance_status == null){
+          this.enable_checkin = true
+        }
+        if (this.last_attendance_status == 'checkin'){
+          this.enable_break = true
+          this.enable_checkout = true
+        }
+        if (this.last_attendance_status == 'break'){
+          this.enable_return = true
+        }
+        if (this.last_attendance_status == 'return'){
+          this.enable_break = true
+          this.enable_checkout = true
+        }
       })
       .catch(function(error){
         if (error.response.data.code == 401) {
