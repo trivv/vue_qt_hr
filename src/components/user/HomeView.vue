@@ -79,18 +79,18 @@
                   </div>
                   <div class="row g-2 mb-2">
                     <div class="col-6">
-                      <button class="btn btn-success w-100" :disabled="!this.enable_checkin">Checkin</button>
+                      <button class="btn w-100" :class="{ 'btn-success': this.enable_checkin, 'btn-secondary': !this.enable_checkin }"  :disabled="!this.enable_checkin" @click="checkIn(this.office_id)">Checkin</button>
                     </div>
                     <div class="col-6">
-                      <button class="btn btn-danger w-100" :disabled="!this.enable_checkout">Checkout</button>
+                      <button class="btn w-100" :class="{ 'btn-danger': this.enable_checkout, 'btn-secondary': !this.enable_checkout }" :disabled="!this.enable_checkout" @click="checkOut(this.office_id)">Checkout</button>
                     </div>
                   </div>
                   <div class="row g-2">
                     <div class="col-6">
-                      <button class="btn btn-warning w-100" :disabled="!this.enable_break">Break</button>
+                      <button class="btn w-100" :class="{ 'btn-warning': this.enable_breakin, 'btn-secondary': !this.enable_breakin }" :disabled="!this.enable_breakin" @click="breakIn(this.office_id)">Breakin</button>
                     </div>
                     <div class="col-6">
-                      <button class="btn btn-info w-100" :disabled="!this.enable_return">Return</button>
+                      <button class="btn w-100" :class="{ 'btn-info': this.enable_breakout, 'btn-secondary': !this.enable_breakout }" :disabled="!this.enable_breakout" @click="breakOut(this.office_id)">Breakout</button>
                     </div>
                   </div>
                 </div>
@@ -101,14 +101,14 @@
                   <table class="table table-bordered">
                     <thead>
                       <tr>
-                        <th scope="col">Văn Phòng</th>
-                        <th scope="col">Vào</th>
-                        <th scope="col">Ra</th>
+                        <th>Văn Phòng</th>
+                        <th>Vào</th>
+                        <th>Ra</th>
                       </tr>
                     </thead>
                     <tbody>
                       <tr v-for="(time_card, index) in time_cards" :value="time_cards.id" :key="index">
-                        <td> {{ time_card.office_name }}</td>
+                        <td>{{ time_card.office_name }}</td>
                         <td>{{ formatDateTime(time_card.time_in) }}</td>
                         <td>{{ formatDateTime(time_card.time_out) }}</td>
                       </tr>
@@ -132,9 +132,10 @@
 
 <script>
 import { RouterLink } from 'vue-router'
-import { successToast, unAuthenticateToast } from '../../services/toast';
+import { successToast, unAuthenticateToast, badRequestToast } from '../../services/toast';
 import { getOfficesQuery, getTopInOfficesQuery } from '../../services/axios/offices/query'
 import { getTimeCardsQuery } from '../../services/axios/time_cards/query'
+import { checkInMutation, checkOutMutation, breakInMutation, breakOutMutation } from '../../services/axios/time_cards/mutation'
 
 export default {
   name: 'UserHomeViewView',
@@ -146,11 +147,11 @@ export default {
       office_id: '',
       offices: [],
       time_cards: [],
-      last_attendance_status: '',
+      last_attendance_status: null,
       schedules: [],
       enable_checkin: false,
-      enable_break: false,
-      enable_return: false,
+      enable_breakin: false,
+      enable_breakout: false,
       enable_checkout: false
     }
   },
@@ -186,11 +187,12 @@ export default {
     }
     setInterval(setDate, 1000);
     this.getOffices();
-    this.getTimeCards();
   },
   methods: {
     onChange(event){
       if (event?.target?.value != null){
+        this.office_id = event.target.value;
+        this.getTimeCards(event.target.value);
         this.getTopInOffices(event.target.value)
       }
     },
@@ -210,6 +212,7 @@ export default {
         this.offices = res.data.offices
         this.office_id = res.data.offices[0].id
         if(this.office_id != null) {
+          this.getTimeCards(this.office_id);
           this.getTopInOffices(this.office_id)
         }
       })
@@ -228,17 +231,27 @@ export default {
         this.last_attendance_status = res.data.last_attendance_status
         if (this.last_attendance_status == null){
           this.enable_checkin = true
+          this.enable_checkout = false
+          this.enable_breakout = false
+          this.enable_breakin = false
         }
-        if (this.last_attendance_status == 'checkin'){
-          this.enable_break = true
+        if (this.last_attendance_status == 'checkin' || this.last_attendance_status == 'breakout'){
+          this.enable_checkin = false
           this.enable_checkout = true
+          this.enable_breakout = false
+          this.enable_breakin = true
         }
-        if (this.last_attendance_status == 'break'){
-          this.enable_return = true
+        if (this.last_attendance_status == 'breakin'){
+          this.enable_checkin = false
+          this.enable_checkout = false
+          this.enable_breakout = true
+          this.enable_breakin = false
         }
-        if (this.last_attendance_status == 'return'){
-          this.enable_break = true
-          this.enable_checkout = true
+        if (this.last_attendance_status == 'checkout'){
+          this.enable_checkin = false
+          this.enable_checkout = false
+          this.enable_breakout = false
+          this.enable_breakin = false
         }
       })
       .catch(function(error){
@@ -249,9 +262,9 @@ export default {
         }
       });
     },
-    getTimeCards(){
+    getTimeCards(office_id){
       var myThis = this;
-      getTimeCardsQuery().then((res) => {
+      getTimeCardsQuery(office_id).then((res) => {
         this.time_cards = res.data.time_cards
       })
       .catch(function(error){
@@ -273,6 +286,92 @@ export default {
         second: '2-digit'
       };
       return new Intl.DateTimeFormat('vi-VN', options).format(date);
+    },
+    checkIn(office_id){
+      var myThis = this;
+      checkInMutation(office_id).then(res => {
+        if (res.data.code == 200) {
+          successToast(myThis, res.data.message);
+          this.getTimeCards(myThis.office_id);
+          this.getTopInOffices(myThis.office_id);
+        }
+      })
+      .catch(function (error){
+        if (error.response) {
+          if (error.response.data.code == 401) {
+            myThis.error = error.response.data.errors
+          } else if (error.response.data.code == 400) {
+            badRequestToast(myThis, error.response.data.errors)
+          }
+        } else {
+          console.log('Error', error.message);
+        }
+      });
+    },
+    checkOut(office_id){
+      var myThis = this;
+      checkOutMutation(office_id).then(res => {
+        if (res.data.code == 200) {
+          successToast(myThis, res.data.message);
+          this.getTimeCards(myThis.office_id);
+          this.getTopInOffices(myThis.office_id);
+        }
+      })
+      .catch(function (error){
+        if (error.response) {
+          if (error.response.data.code == 401) {
+            myThis.error = error.response.data.errors
+          } else if (error.response.data.code == 400) {
+            badRequestToast(myThis, error.response.data.errors)
+          }
+        } else {
+          console.log('Error', error.message);
+        }
+      });
+    },
+    breakIn(office_id){
+      var myThis = this;
+      breakInMutation(office_id).then(res => {
+        if (res.data.code == 200) {
+          successToast(myThis, res.data.message);
+          this.getTimeCards(myThis.office_id);
+          this.getTopInOffices(myThis.office_id);
+        }
+      })
+      .catch(function (error){
+        if (error.response) {
+          if (error.response.data.code == 401) {
+            myThis.error = error.response.data.errors
+          } else if (error.response.data.code == 400) {
+            badRequestToast(myThis, error.response.data.errors)
+          }
+        } else {
+          console.log('Error', error.message);
+        }
+      });
+    },
+    breakOut(office_id){
+      var myThis = this;
+      breakOutMutation(office_id).then(res => {
+        if (res.data.code == 200) {
+          successToast(myThis, res.data.message);
+          this.getTimeCards(myThis.office_id);
+          this.getTopInOffices(myThis.office_id);
+        }
+      })
+      .catch(function (error){
+        console.log(error.response)
+
+        if (error.response) {
+          if (error.response.data.code == 401) {
+            myThis.error = error.response.data.errors
+          } else if (error.response.data.code == 400) {
+            badRequestToast(myThis, error.response.data.errors)
+          }
+        } else {
+          console.log('Error', error.message);
+        }
+      });
     }
   }
 }
