@@ -22,3 +22,11 @@ export async function unAuthenticateToast(myThis){
     position: 'top-right'
   })
 }
+
+export async function badRequestToast(myThis, message){
+  myThis.$toast.open({
+    message: message,
+    type: 'warning',
+    position: 'top-right'
+  })
+}
